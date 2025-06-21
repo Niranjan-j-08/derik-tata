@@ -1,0 +1,181 @@
+{
+  "name": "OTP Send",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 13
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        -180
+      ],
+      "id": "471932cc-bfd8-4bff-897e-ece0564a64ea",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1gLCniITEzyTVe-hcjPdOFEYNlxLPa0Svc9u3LLO8DjY/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet2",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -440,
+        -80
+      ],
+      "id": "d23460f2-60af-437b-83d3-0854abb6767e",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4GaErpxz77do4xqy",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -260,
+        -120
+      ],
+      "id": "b9330e93-a90e-49a9-bd1d-a11e725b6b0b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "15b492f1-f670-4e4b-9df0-e4a065871228",
+              "leftValue": "={{ Number($json[\"PriceNow\"]) }}",
+              "rightValue": "={{ Number($json[\"Price\"]) }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -140,
+        0
+      ],
+      "id": "c6a4e95a-c416-40b6-a2f4-c08b1f1c1c52",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.msg4.cloud.robeeta.com/sms.aspx?apikey=e2fd13bf9b3d461d8ab5d0f1d21353efcee96fa21a304965ab56eb1e4934d6ab&tmpid=1707161837708309012&sid=DERMTR&to={{ $json[\"phone\"] }}&msg=Welcome to Derik Group {{ $json[\"purice down\"] }} is your OTP to register for EMP Attendance Mobile App.;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        -140
+      ],
+      "id": "74dca7db-59be-44b6-b8ec-b742309ff153",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f5def820-3b2f-4e60-b4a5-ef9f195f9d93",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "64237e6ed13c22ceb7a488287299c49e2fbd0267120ba648886448008c00a817"
+  },
+  "id": "s3eMouVKAMZQV7jq",
+  "tags": []
+}
